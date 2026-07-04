@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import "./App.css";
 
-const API_BASE = "https://digidoc-backend-api.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://digidoc-backend-api.onrender.com";
 
 const CORNER_LABELS = ["Top-left", "Top-right", "Bottom-right", "Bottom-left"];
 

@@ -1,110 +1,107 @@
-# DigiDoc 📄🚀
+# DigiDoc
 
-DigiDoc is a feature-rich, responsive web-based document scanner application inspired by the mobile ClearScanner app. It bridges the gap between phone scanning conveniences and powerful web interfaces, optimized seamlessly for both mobile touchscreens and desktop viewports. 
+DigiDoc is a FastAPI + React document scanning project.
 
-Users can capture or upload images, auto-detect document edges via computer vision, apply high-quality scanning filters, manage multi-page layout orders, and export finalized PDFs using granular compression layers.
+## Current
 
----
+What is implemented right now:
 
-## ✨ Features
+- Image upload in the React client.
+- Corner detection for uploaded images.
+- Base64 image-to-PDF conversion in the backend.
+- A FastAPI API with `/scan` and `/corners` endpoints.
+- Local development startup through `main.py`.
+- Docker Compose for running the backend and frontend together.
 
-- **Smart Ingestion:** Snap direct photos via the HTML5 Camera API or drop local files (`JPEG`, `PNG`).
-- **Auto Edge & Corner Detection:** Intelligent computer vision overlays that snap straight onto the document boundaries with adjustable 4-point manual correction.
-- **Interactive Multi-Page Management:** Drag, drop, and scroll intuitively to reorder, append, or delete individual pages seamlessly inside a unified document context.
-- **Clarity Enhancements:** Premium custom-tailored OpenCV non-destructive adjustments (Original, Magic Color, Crisp B&W, Laser Scan Simulator).
-- **Flexible PDF Compressions:** Variable-size export options tailored for high-fidelity archival prints, standard emails, or size-constrained web portals.
+## Planned
 
----
+These are described in the original product direction, but are not fully implemented in the current codebase:
 
-## 🛠️ Tech Stack
+- Multi-page document management.
+- Manual corner correction and page reordering.
+- Scan enhancement modes such as B&W and color filters.
+- Cloud storage integration.
+- Authentication and account management.
+- Database-backed document persistence.
+- Production PDF export workflows.
 
-- **Frontend:** ReactJS + Vite + TailwindCSS (or modular styles), HTML5 Canvas/WebGL for interactive warping matrices.
-- **Backend:** Python (FastAPI framework) utilizing asynchronous background tasks for intensive processing.
-- **Image Processing Engine:** OpenCV (`opencv-python-headless`) + NumPy.
-- **Database Engine:** PostgreSQL (Handles authentication mappings and page serialization state).
-- **Blob Engine:** Cloudflare R2 object storage (Low-latency ingestion uploads and pre-signed output delivery).
-- **Dependency Management:** `uv` (Fast Python packaging) + `npm`.
-- **Identity Provider:** Google OAuth 2.0.
-
----
-
-## 📂 Project Architecture & Structure
+## Architecture
 
 ```text
 .
-├── SRS.md                         # Detailed Software Requirements Specifications
-├── backend                        # FastAPI computational engine
-└── frontend
-    └── digidoc-app                # Modern React Client application
+├── backend
+│   └── src/app
+│       ├── api
+│       ├── config
+│       ├── controllers
+│       ├── models
+│       ├── services
+│       └── utils
+├── frontend/digidoc-app
+└── docker-compose.yml
 ```
----
 
-## ⚡ Quick Start & Local Setup
+### Backend
+
+- FastAPI app entrypoint: `backend/src/app/main.py`
+- API routes: `backend/src/app/api/routes.py`
+- Request and response models: `backend/src/app/models`
+- Image processing services: `backend/src/app/services`
+
+### Frontend
+
+- Vite + React app in `frontend/digidoc-app`
+- Main UI entrypoint: `frontend/digidoc-app/src/App.jsx`
+- Global bootstrapping: `frontend/digidoc-app/src/main.jsx`
+
+## Local Setup
 
 ### Prerequisites
 
-Ensure you have the following installed locally:
+- Python 3.12+
+- Node.js 18+
+- `uv` and `npm`
 
-* Python 3.11+ (and `uv` package manager)
-* Node.js (v18+) & `npm`
-* PostgreSQL instance running
+### Backend
 
-### 1. Environment Configurations
-
-Create an `.env` file in the root of the `/backend` directory:
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/digidoc
-```
-
-### 2. Backend Bootstrapping (FastAPI)
-
-Using `uv` for modern, blindingly fast dependency coordination:
+From `backend/`:
 
 ```bash
-# Navigate to backend workspace
-cd backend
-
-# Synchronize virtual environment dependencies using uv
 uv sync
-
-# Fire up the asynchronous development backend
-uv run uvicorn src.app.main:app --reload --port 8000
-
+ENV=dev PYTHONPATH=src uv run python src/app/main.py
 ```
 
-Your OpenAPI interactive documentation page will go live immediately at `http://localhost:8000/docs`.
+The backend exposes:
 
-### 3. Frontend Bootstrapping (React + Vite)
+- API: `http://localhost:8000`
+- OpenAPI docs: `http://localhost:8000/docs`
+
+### Frontend
+
+From `frontend/digidoc-app/`:
 
 ```bash
-# Navigate to frontend workspace
-cd frontend/digidoc-app
-
-# Install client-side node assets
 npm install
-
-# Initialize responsive engine development preview
 npm run dev
-
 ```
 
-Open up your local development browser view at `http://localhost:5173`.
+The frontend runs at `http://localhost:5173`.
 
----
+### Docker Compose
 
-## ⚙️ Core Processing Workflows
+Start both services from the repository root:
 
-1. **Direct Cloud Ingestion Optimization:** To maximize throughput, the React layout negotiates direct upload agreements directly to **Cloudflare R2** via pre-signed uniform resource tokens.
-2. **Normalized Poly Coordinate Conversions:** The client canvas framework serializes boundary coordinates mapping scales from `0.0` to `1.0` (relative percentages). This avoids frame-rate breakage when editing a large raw phone photograph on a small browser viewport size.
-3. **Lossless Document Assemblies:** Finalization structures leverage internal Python libraries (such as `img2pdf`) to bind transformed document assets natively without introducing secondary compression layers until specified by user quality sliders.
-
----
-
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
+```bash
+docker compose up --build
 ```
 
-```
+This brings up:
+
+- Backend on `http://localhost:8000`
+- Frontend on `http://localhost:5173`
+
+## Notes
+
+- The frontend reads its API base from `VITE_API_BASE_URL`.
+- The backend config is selected with `ENV` (`dev` or `prod`).
+- The current backend script entrypoint works, but it is still a temporary launch style until the project is standardized around a direct Uvicorn command.
