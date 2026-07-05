@@ -1,6 +1,5 @@
-from app.utils.img_utils import ndarray_to_base64
 from app.utils.img_utils import base64_to_ndarray
-from app.services.doc_edge_detection_service import detect_document_contour
+from app.services.corner_detection_service_v1 import detect_document_contour
 from fastapi import status, HTTPException
 import base64
 
@@ -43,13 +42,12 @@ async def handle_corner_detection(image_data: str):
         image_ndarray = await base64_to_ndarray(image_data)
         result = await detect_document_contour(image_ndarray)
 
-        quad, boxed = result
+        quad = result
 
         corners = quad.astype(float).tolist()
 
         return {
-            "corners": corners,
-            "overlay_img_base64": await ndarray_to_base64(boxed)
+            "corners": corners
         }
 
     except ValueError as e:
