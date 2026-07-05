@@ -405,6 +405,23 @@ body {
   border-radius: calc(var(--radius-lg) - 1px);
 }
 
+.corner-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.corner-lines polygon {
+  fill: rgba(36, 244, 255, 0.08);
+  stroke: var(--cyan);
+  stroke-width: 4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 7px var(--cyan-glow));
+}
+
 /* ── Corner pins ─────────────────────────────── */
 .corner-pin {
   position: absolute;

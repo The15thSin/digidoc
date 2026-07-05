@@ -134,7 +134,7 @@ export default function App() {
       const data = await res.json();
       // Expected: { overlay_image: "<base64>", corners: [[x,y], [x,y], [x,y], [x,y]] }
       setResult({
-        overlayB64: data.overlay_img_base64,
+        // overlayB64: data.overlay_img_base64,
         corners: data.corners,
       });
     } catch (err) {
@@ -161,6 +161,11 @@ export default function App() {
       top: `${(y / imgSize.h) * 100}%`,
     };
   };
+
+  const cornerPathPoints =
+    result?.corners?.length >= 4
+      ? result.corners.map(([x, y]) => `${x},${y}`).join(" ")
+      : "";
 
   return (
     <div className="app-shell">
@@ -284,11 +289,22 @@ export default function App() {
                 <div className="result-image-wrap">
                   <img
                     ref={resultImgRef}
-                    src={`data:image/jpeg;base64,${result.overlayB64}`}
+                    // src={`data:image/jpeg;base64,${result.overlayB64}`}
+                    src={previewUrl}
                     alt="Corner detection overlay"
                     className="result-img"
                     onLoad={onResultImgLoad}
                   />
+                  {cornerPathPoints && imgSize.w > 0 && imgSize.h > 0 && (
+                    <svg
+                      className="corner-lines"
+                      viewBox={`0 0 ${imgSize.w} ${imgSize.h}`}
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                    >
+                      <polygon points={cornerPathPoints} />
+                    </svg>
+                  )}
                   {result.corners?.map((pt, i) => (
                     <div
                       key={i}
